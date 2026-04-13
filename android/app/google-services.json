@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "359140036144",
+    "project_id": "bariproject-ec9fb",
+    "storage_bucket": "bariproject-ec9fb.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:359140036144:android:038979740b8b55a05427f5",
+        "android_client_info": {
+          "package_name": "com.bariproject.bari_project"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBpRSHMWnzCnA-9ny4WO_7g1o4SDFZNNEk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

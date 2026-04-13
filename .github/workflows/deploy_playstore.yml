@@ -1,0 +1,88 @@
+name: Deploy to Google Play Store
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  build:
+    name: Build & Deploy APK
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.41.6'
+          channel: 'stable'
+      
+      - name: Get dependencies
+        run: flutter pub get
+      
+      - name: Run tests
+        run: flutter test
+      
+      - name: Build APK
+        run: |
+          flutter build apk --release \
+            --split-per-abi \
+            --dart-define=FIREBASE_PROJECT_ID=${{ secrets.FIREBASE_PROJECT_ID }}
+      
+      - name: Build AppBundle
+        run: |
+          flutter build appbundle --release \
+            --dart-define=FIREBASE_PROJECT_ID=${{ secrets.FIREBASE_PROJECT_ID }}
+      
+      - name: Upload to Google Play (Internal Testing)
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_STORE_SERVICE_ACCOUNT }}
+          packageName: com.example.bari_project
+          releaseFiles: 'build/app/outputs/bundle/release/app-release.aab'
+          track: internal
+          status: completed
+          whatsNewDirectory: 'fastlane/metadata/android'
+      
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: |
+            ## 🚀 Project Home Sweet Home - ${{ github.ref }}
+            
+            **Build Details:**
+            - Build Date: ${{ github.event.head_commit.timestamp }}
+            - Commit SHA: ${{ github.sha }}
+            - Repository: ${{ github.repository }}
+            
+            **Downloads:**
+            - 📱 APK files available in assets
+            - 🎁 AppBundle uploaded to Google Play Store (Internal Testing)
+            
+            **Instructions:**
+            1. Download APK for direct installation
+            2. For testing, promoted to Play Store
+            3. Users will receive app via Google Play Store
+            
+            **Changelog:**
+            - Smooth page transitions
+            - Enhanced deposit management
+            - Real-time notifications
+            - Bug fixes and improvements
+          draft: false
+          prerelease: false
+      
+      - name: Upload APK Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: apk-files
+          path: |
+            build/app/outputs/flutter-apk/app-release.apk
+            build/app/outputs/apk/release/
+          retention-days: 30
