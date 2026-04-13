@@ -268,8 +268,8 @@ class MyDepositsScreen extends StatelessWidget {
           // Summary calculations use original docs
           final total = docs.fold<double>(
             0,
-            (acc, d) =>
-                acc +
+            (sum, d) =>
+                sum +
                 ((d.data() as Map<String, dynamic>)['amount'] as num)
                     .toDouble(),
           );
@@ -285,8 +285,8 @@ class MyDepositsScreen extends StatelessWidget {
               })
               .fold<double>(
                 0,
-                (acc, d) =>
-                    acc +
+                (sum, d) =>
+                    sum +
                     ((d.data() as Map<String, dynamic>)['amount'] as num)
                         .toDouble(),
               );
